@@ -1,0 +1,377 @@
+@import "tailwindcss";
+/* The brand: font sources and the colour roles, written from DESIGN.md by `npm run brand`. */
+@import "./brand.css";
+
+/*
+ * The seven colour roles and two font roles become Tailwind classes:
+ * bg-paper, text-ink, border-line, text-accent-ink, font-display, font-body.
+ * Components use these names only, never a colour or a font; the brand test
+ * enforces it. Dark mode is off: a brand that needs it adds a second set of
+ * values in a prefers-color-scheme block here.
+ */
+
+/*
+ * Headings are set in the display face at this weight and letter spacing.
+ * A display face that comes in one weight only (many poster faces do) needs
+ * the weight set to the one it has, usually 400, and the spacing to 0;
+ * otherwise the browser fakes a bold and the letters smear.
+ */
+:root {
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+}
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --font-display: var(--display-font);
+  --font-body: var(--body-font);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    font-family: var(--body-font);
+    font-optical-sizing: auto;
+    text-rendering: optimizeLegibility;
+  }
+  /* Anchored sections land below the sticky header, not under it. */
+  [id] {
+    scroll-margin-top: 5.5rem;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* Every heading on the site. Change these three rules and all of them follow. */
+  .heading-1,
+  .heading-2,
+  .heading-3 {
+    font-family: var(--display-font);
+    font-weight: var(--display-weight);
+    letter-spacing: var(--display-tracking);
+    text-wrap: balance;
+  }
+  .heading-1 {
+    font-size: 2.5rem;
+    line-height: 1.08;
+  }
+  .heading-2 {
+    font-size: 1.75rem;
+    line-height: 1.2;
+  }
+  .heading-3 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+  @media (min-width: 640px) {
+    .heading-1 {
+      font-size: 3.75rem;
+    }
+    .heading-2 {
+      font-size: 2.5rem;
+    }
+    .heading-3 {
+      font-size: 1.375rem;
+    }
+  }
+
+  /* Body copy: bold stays in the ink colour, so the accent is kept for labels, links and buttons. */
+  .copy strong {
+    font-weight: 700;
+  }
+
+  /* A panel on the surface colour with a soft glow of the accent in two corners. */
+  .panel {
+    background:
+      radial-gradient(ellipse 70% 90% at 100% 10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 0% 100%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%),
+      var(--surface);
+  }
+
+  /* FAQ answers open below the question. */
+  .faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 50;
+    border-radius: 9999px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  .skip-link:focus {
+    top: 1rem;
+  }
+
+  .eyebrow {
+    font-family: var(--body-font);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+  .label {
+    font-family: var(--body-font);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .link {
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.075em;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
+    transition:
+      color 0.15s,
+      text-decoration-color 0.15s;
+  }
+  .link:hover {
+    color: var(--accent-ink);
+    text-decoration-color: var(--accent);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.75rem 1.25rem;
+    font-family: var(--body-font);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition:
+      background-color 0.15s,
+      border-color 0.15s,
+      color 0.15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: var(--paper);
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--accent) 86%, var(--ink));
+  }
+  /* The call to action through the page, and its slim copy in the header. */
+  .btn-lg {
+    padding: 1rem 1.75rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  .btn-sm {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .btn-ghost {
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn-ghost:hover {
+    border-color: var(--ink);
+  }
+
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    background: var(--paper);
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  .card:hover {
+    border-color: color-mix(in srgb, var(--ink) 22%, transparent);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.04),
+      0 18px 40px -18px rgb(0 0 0 / 0.22);
+  }
+
+  /* The contact form card. */
+  .form-card {
+    margin-top: 3rem;
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .form-card {
+      padding: 2.25rem;
+    }
+  }
+  .form-lead {
+    margin: 0;
+    font-family: var(--body-font);
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  /*
+   * The frame is the form's own ground, the surface colour of the card around
+   * it; set the form's background to match in GoHighLevel. GHL's page declares
+   * no colour scheme, so on a dark site the browser would paint the frame's
+   * spare space white; a light scheme on the frame keeps that space clear.
+   * The corners are the 8px GHL's embed code gives the form: a form with an
+   * outline draws it at the frame's top edge, and rounder corners clip it.
+   */
+  .form-frame {
+    margin-top: 1.25rem;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    background: var(--surface);
+    color-scheme: light;
+  }
+  /* Wide screens: the words on the left, the form on the right. */
+  @media (min-width: 768px) {
+    .form-split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
+      grid-template-areas:
+        "lead frame"
+        "note frame";
+      column-gap: 3rem;
+      row-gap: 0;
+    }
+    .form-split .form-lead {
+      grid-area: lead;
+      align-self: end;
+      font-size: 1.625rem;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .form-split .form-note {
+      grid-area: note;
+      align-self: start;
+    }
+    .form-split .form-frame {
+      grid-area: frame;
+      align-self: center;
+      margin-top: 0;
+    }
+  }
+  .form-note {
+    margin: 1rem 0 0;
+    font-family: var(--body-font);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .back-link {
+    font-family: var(--body-font);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.15s;
+  }
+  .back-link:hover {
+    color: var(--accent-ink);
+  }
+
+  /*
+   * Markdown page text, set for reading. Section headings are labels in the
+   * body face and the accent; the display face is kept for the page title.
+   * :where() keeps these selectors weak so components placed inside a page win.
+   */
+  .prose {
+    font-family: var(--body-font);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .prose :where(p, ul, ol, blockquote, figure) {
+    margin: 0 0 1.25em;
+  }
+  .prose > :first-child {
+    margin-top: 0;
+  }
+  .prose :where(h2) {
+    margin: 2.4em 0 0.6em;
+    font-family: var(--body-font);
+    font-size: 1.125em;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--accent-ink);
+  }
+  .prose :where(h3) {
+    margin: 1.8em 0 0.5em;
+    font-family: var(--body-font);
+    font-size: 1em;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+  .prose :where(a) {
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.075em;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
+    transition:
+      color 0.15s,
+      text-decoration-color 0.15s;
+  }
+  .prose :where(a:hover) {
+    color: var(--accent-ink);
+    text-decoration-color: var(--accent);
+  }
+  .prose :where(strong) {
+    font-weight: 650;
+  }
+  .prose :where(ul) {
+    list-style: disc;
+    padding-left: 1.25em;
+  }
+  .prose :where(ol) {
+    list-style: decimal;
+    padding-left: 1.4em;
+  }
+  .prose :where(li) {
+    margin: 0.35em 0;
+  }
+  .prose :where(li)::marker {
+    color: var(--accent);
+  }
+  .prose :where(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding-left: 1em;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .prose :where(hr) {
+    margin: 3em 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+  .prose :where(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+}

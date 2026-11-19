@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { FORMS, SITE } from '../data/site';
+import { BRAND } from '../data/brand';
+import { FORM_EMBED_SCRIPT } from '../lib/ghl';
+
+interface Props {
+  title: string;
+  description: string;
+  /** The page's own address, e.g. "/" or "/about". */
+  path: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, unknown>;
+  /** Loads GHL's form script; set on any page with a form. */
+  hasForm?: boolean;
+  /** The nav href to mark as the current page. */
+  current?: string;
+  /** Third-party origins the page will fetch from early (a video player, a form), connected to while the HTML parses. */
+  preconnect?: string[];
+}
+const { title, description, path, ogType = 'website', jsonLd, hasForm = false, current, preconnect = [] } = Astro.props;
+const canonical = new URL(path, SITE.url).href;
+const image = new URL(BRAND.share, SITE.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content={BRAND.colors.paper} />
+    {preconnect.map((origin) => <link rel="preconnect" href={origin} />)}
+
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {SITE.xHandle && <meta name="twitter:site" content={SITE.xHandle} />}
+
+    <link rel="icon" href={BRAND.icons.svg} type="image/svg+xml" />
+    <link rel="icon" type="image/png" sizes="32x32" href={BRAND.icons.png32} />
+    <link rel="icon" type="image/png" sizes="192x192" href={BRAND.icons.png192} />
+    <link rel="apple-touch-icon" sizes="180x180" href={BRAND.icons.apple} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <script is:inline define:vars={{ gaId: SITE.gaId, liveHost: SITE.liveHost, ghlHost: FORMS.host }}>
+      // Analytics run only with a GA4 id and only on the live hostname, so
+      // previews and workers.dev visits never reach the numbers.
+      if (gaId && location.hostname === liveHost) {
+        const tag = document.createElement('script');
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+        document.head.appendChild(tag);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () {
+          window.dataLayer.push(arguments);
+        };
+        window.gtag('js', new Date());
+        window.gtag('config', gaId);
+
+        // Form submissions, sent to GA as generate_lead. The GHL form lives in
+        // an iframe on another domain, so GA can't see it submit; after a
+        // successful submission GHL's form posts ['set-sticky-contacts',
+        // 'embedded_iframe_<frame id>', …] to this page (its submit handler,
+        // read in GHL's code on 2 Nov 2026). Only that message counts, and
+        // only the fact of it goes to GA: the same handler posts a second
+        // message (key '_ud') carrying the visitor's details, which must never
+        // be forwarded. If GHL changes the message, submissions quietly stop
+        // counting, so compare GA with GHL's submissions now and then.
+        window.addEventListener('message', function (event) {
+          const data = event.data;
+          if (event.origin !== ghlHost || !Array.isArray(data)) return;
+          if (data[0] !== 'set-sticky-contacts' || typeof data[1] !== 'string') return;
+          if (data[1].indexOf('embedded_iframe_') !== 0) return;
+          const frame = Array.prototype.find.call(document.querySelectorAll('iframe[data-form-id]'), function (f) {
+            return f.contentWindow === event.source;
+          });
+          window.gtag('event', 'generate_lead', {
+            lead_source: 'form',
+            form_id: frame ? frame.getAttribute('data-form-id') : 'unknown',
+          });
+        });
+      }
+    </script>
+  </head>
+  <body class="min-h-dvh bg-paper font-body text-ink antialiased">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Header current={current} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    {hasForm && <script is:inline defer src={FORM_EMBED_SCRIPT} />}
+  </body>
+</html>

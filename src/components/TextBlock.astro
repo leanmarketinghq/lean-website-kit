@@ -1,0 +1,18 @@
+---
+/** A heading over paragraphs, in a column capped at about 65 characters. */
+interface Props {
+  id: string;
+  title: string;
+  paragraphs: readonly string[];
+}
+const { id, title, paragraphs } = Astro.props;
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <div class="max-w-[42rem]">
+    <h2 class="heading-2">{title}</h2>
+    <div class="copy mt-6 space-y-5 font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+      {paragraphs.map((p) => <p set:html={p} />)}
+    </div>
+  </div>
+</section>

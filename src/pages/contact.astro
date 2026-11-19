@@ -1,0 +1,56 @@
+---
+/**
+ * /contact: how to reach the business. The email, phone and postal address
+ * are CONTACT in src/data/site.ts; a phone or an address left empty is not
+ * shown. The form is the GoHighLevel embed in FORMS there; without a form id
+ * the page stands on the details alone.
+ */
+import Base from '../layouts/Base.astro';
+import LeadForm from '../components/LeadForm.astro';
+import { CONTACT, FORMS, SITE } from '../data/site';
+
+const title = 'Contact';
+const description = `How to reach ${SITE.name}: the email address, the phone number and the postal address.`;
+const intro = `Questions for ${SITE.name}? Here’s how to reach us.`;
+const formLead = 'Send us a message and we’ll get back to you.';
+const hasForm = Boolean(FORMS.contact);
+const row = 'grid gap-1 py-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-8';
+const term = 'font-bold text-accent-ink';
+---
+
+<Base title={`${title} - ${SITE.name}`} description={description} path="/contact" current="/contact" hasForm={hasForm}>
+  <article class="mx-auto w-full max-w-[40rem] px-5 pt-12 sm:pt-20">
+    <a href="/" class="back-link">← Home</a>
+    <h1 class="heading-2 mt-6">{title}</h1>
+    <p class="mt-6 font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">{intro}</p>
+
+    {hasForm && <LeadForm lead={formLead} suffix="contact" />}
+
+    <dl class="mt-10 divide-y divide-line border-y border-line font-body text-[1.0625rem] leading-relaxed">
+      <div class={row}>
+        <dt class={term}>Email</dt>
+        <dd><a href={`mailto:${CONTACT.email}`} class="link">{CONTACT.email}</a></dd>
+      </div>
+      {
+        CONTACT.phone && (
+          <div class={row}>
+            <dt class={term}>Phone</dt>
+            <dd><a href={CONTACT.phoneHref} class="link">{CONTACT.phone}</a></dd>
+          </div>
+        )
+      }
+      {
+        CONTACT.address.length > 0 && (
+          <div class={row}>
+            <dt class={term}>Mail</dt>
+            <dd>
+              <address class="not-italic">
+                {CONTACT.address.map((line, i) => <>{i > 0 && <br />}{line}</>)}
+              </address>
+            </dd>
+          </div>
+        )
+      }
+    </dl>
+  </article>
+</Base>

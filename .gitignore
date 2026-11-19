@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.env
+.env.*
+.dev.vars
+.DS_Store
+.obsidian/
+.claude/settings.local.json
+
+# Written by `npm run brand` from DESIGN.md. Edit DESIGN.md, never these.
+src/styles/brand.css
+src/data/brand.ts

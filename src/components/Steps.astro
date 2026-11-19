@@ -1,0 +1,46 @@
+---
+/**
+ * Numbered steps on a panel: how it works, or the parts of an offer. With a
+ * photograph the steps sit beside it (under it on phones); without one they
+ * run across the page.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  items: readonly { label: string; paragraphs: readonly string[] }[];
+  image?: ImageMetadata;
+  alt?: string;
+}
+const { id, title, subtitle, items, image, alt = '' } = Astro.props;
+const number = (i: number) => String(i + 1).padStart(2, '0');
+const columns = items.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2';
+---
+
+<section id={id} class="mx-auto max-w-7xl px-3 py-6 sm:px-6">
+  <div class="panel rounded-2xl px-5 py-12 sm:px-10 sm:py-16">
+    <h2 class="heading-2">{title}</h2>
+    {subtitle && <p class="mt-3 font-body text-sm font-bold tracking-[0.2em] text-accent-ink uppercase">{subtitle}</p>}
+    <div class:list={['mt-10', image && 'grid items-start gap-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10']}>
+      {image && <Image src={image} alt={alt} widths={[480, 768, 1200]} sizes="(min-width: 768px) 38vw, 100vw" class="w-full rounded-xl md:sticky md:top-24" />}
+      <ol class:list={[image ? 'space-y-3 sm:space-y-4' : ['grid gap-3 sm:gap-4', columns]]}>
+        {
+          items.map((item, i) => (
+            <li class="rounded-2xl bg-paper/60 p-5 sm:p-7">
+              <h3 class="flex items-baseline gap-3 font-body text-[1.0625rem] font-bold text-accent-ink">
+                <span class="font-body text-[0.875rem] font-bold text-muted">{number(i)}</span>
+                {item.label}
+              </h3>
+              <div class="copy mt-4 space-y-3 font-body text-[1rem] leading-relaxed sm:text-[1.0625rem]">
+                {item.paragraphs.map((p) => <p set:html={p} />)}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,20 @@
+---
+/**
+ * The link home: the logo from DESIGN.md, or the site name as text when
+ * there is none. The logo's rendered size comes from DESIGN.md too, so the
+ * header never jumps while it loads.
+ */
+import { SITE } from '../data/site';
+import { BRAND } from '../data/brand';
+const { logo } = BRAND;
+---
+
+<a href="/" class="flex items-center text-ink">
+  {
+    logo.light ? (
+      <img src={logo.light} alt={SITE.name} width={logo.width} height={logo.height} class="h-7 w-auto" />
+    ) : (
+      <span class="heading-3">{SITE.name}</span>
+    )
+  }
+</a>

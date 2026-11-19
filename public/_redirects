@@ -1,0 +1,6 @@
+# Old addresses, sent permanently to their new homes. One rule per line:
+#   /old-address        /new-address        301
+# tests/site.test.mjs checks that every target is a page this site builds and
+# that no rule hides a live page. Renaming a page later? Add its old address
+# here in the same commit. Replacing an older website? List each of its page
+# addresses here, so nobody following an old link lands on a dead end.

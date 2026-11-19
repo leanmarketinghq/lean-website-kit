@@ -1,0 +1,12 @@
+---
+/**
+ * Puts whatever is inside it on the other ground: DESIGN.md's
+ * `colors.inverse` set, full width, with the same role names inside. Wrap one
+ * or more sections of the home page in it, e.g. <Band><Steps … /></Band>.
+ * Without an inverse set in DESIGN.md it changes nothing.
+ */
+---
+
+<div class="band-inverse bg-paper text-ink">
+  <slot />
+</div>

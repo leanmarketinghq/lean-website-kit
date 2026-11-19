@@ -1,0 +1,14 @@
+---
+/**
+ * The site's one button: the call to action from src/data/site.ts (CTA).
+ * `sm` is the slim copy in the header. With no label there is no button.
+ */
+import { CTA } from '../data/site';
+
+interface Props {
+  size?: 'sm' | 'lg';
+}
+const { size = 'lg' } = Astro.props;
+---
+
+{CTA.label && CTA.href && <a href={CTA.href} class:list={['btn btn-primary', size === 'lg' ? 'btn-lg' : 'btn-sm']}>{CTA.label}</a>}

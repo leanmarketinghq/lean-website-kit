@@ -1,0 +1,33 @@
+---
+/**
+ * Questions and answers as the browser's own disclosure element: a card per
+ * question that opens to the answer, with no JavaScript.
+ */
+interface Props {
+  id: string;
+  title: string;
+  items: readonly { question: string; answer: string }[];
+}
+const { id, title, items } = Astro.props;
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <h2 class="heading-2">{title}</h2>
+  <div class="mt-10 max-w-4xl space-y-3">
+    {
+      items.map((item) => (
+        <details class="faq group rounded-2xl bg-surface">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-2xl px-5 py-4 font-body text-[1.0625rem] font-bold [&::-webkit-details-marker]:hidden">
+            <span>{item.question}</span>
+            <svg aria-hidden="true" class="size-5 shrink-0 text-accent transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <div class="max-w-[42rem] px-5 pt-1 pb-5 font-body text-[1.0625rem] leading-relaxed sm:text-[1.125rem]">
+            <p set:html={item.answer} />
+          </div>
+        </details>
+      ))
+    }
+  </div>
+</section>

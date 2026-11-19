@@ -1,0 +1,25 @@
+---
+/**
+ * The contact form (a GHL embed) in a card. The page must pass hasForm to
+ * Base so the GHL resize script loads. `split` puts the words beside the form
+ * on wide screens; the stacked version is for narrow columns.
+ */
+import { FORMS } from '../data/site';
+import { formIframe } from '../lib/ghl';
+
+interface Props {
+  lead: string;
+  note?: string;
+  /** Unique on the page; becomes part of the iframe id. */
+  suffix: string;
+  id?: string;
+  split?: boolean;
+}
+const { lead, note, suffix, id, split = false } = Astro.props;
+---
+
+<aside id={id} class:list={['form-card', split && 'form-split']} aria-label="Contact form">
+  <p class="form-lead">{lead}</p>
+  <div class="form-frame" set:html={formIframe(FORMS.contact, FORMS.contactName, suffix, FORMS.contactHeight)} />
+  {note && <p class="form-note">{note}</p>}
+</aside>

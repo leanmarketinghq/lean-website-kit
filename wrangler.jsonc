@@ -1,0 +1,24 @@
+{
+  // This site on Cloudflare Workers: static files only, no server code.
+  // Cloudflare builds and publishes it each time the `main` branch changes.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // The site's name on Cloudflare, and the first part of its workers.dev
+  // address. Cloudflare set it when this copy of the kit was made. Never
+  // change it: builds fail when it stops matching the site's name there.
+  "name": "site-template",
+  "compatibility_date": "2026-10-10",
+  // The site's own domain, once it has one. Declared here so every publish
+  // keeps it attached: this list is the site's whole list, and a domain added
+  // only in the Cloudflare dashboard is detached at the next publish.
+  // "routes": [{ "pattern": "example.com", "custom_domain": true }],
+  "assets": {
+    "directory": "./dist",
+    // /about serves about.html; /about/ redirects to it.
+    "html_handling": "auto-trailing-slash",
+    // Unknown addresses get dist/404.html with a real 404 status.
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": true,
+  "preview_urls": true,
+  "previews": {}
+}

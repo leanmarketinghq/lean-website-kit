@@ -1,0 +1,33 @@
+---
+/**
+ * A heading, an opening paragraph, then two to four cards (a short label and
+ * a few lines each) and a closing paragraph. Good for the problems a customer
+ * arrives with, or the parts of a service.
+ */
+interface Props {
+  id: string;
+  title: string;
+  intro?: string;
+  cards: readonly { label: string; text: string }[];
+  outro?: string;
+}
+const { id, title, intro, cards, outro } = Astro.props;
+const columns = cards.length >= 4 ? 'lg:grid-cols-4' : cards.length === 3 ? 'lg:grid-cols-3' : '';
+const copy = 'copy max-w-[42rem] font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]';
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <h2 class="heading-2 max-w-[42rem]">{title}</h2>
+  {intro && <p class:list={[copy, 'mt-6']} set:html={intro} />}
+  <ul class:list={['mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4', columns]}>
+    {
+      cards.map((card) => (
+        <li class="rounded-2xl bg-surface p-5 sm:p-6">
+          <h3 class="font-body text-[0.875rem] font-bold tracking-[0.12em] text-accent-ink uppercase">{card.label}</h3>
+          <p class="mt-3 font-body text-[1rem] leading-relaxed">{card.text}</p>
+        </li>
+      ))
+    }
+  </ul>
+  {outro && <p class:list={[copy, 'mt-8']} set:html={outro} />}
+</section>

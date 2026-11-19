@@ -1,0 +1,40 @@
+---
+/** A photograph beside a heading and paragraphs; the photograph first on phones. Good for who is behind the business. */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  id: string;
+  title: string;
+  image: ImageMetadata;
+  alt: string;
+  caption?: string;
+  paragraphs: readonly string[];
+  link?: { label: string; href: string };
+}
+const { id, title, image, alt, caption, paragraphs, link } = Astro.props;
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <div class="grid items-start gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-14">
+    <figure>
+      <Image src={image} alt={alt} widths={[480, 768, 1200]} sizes="(min-width: 768px) 40vw, 100vw" class="w-full rounded-xl" />
+      {caption && <figcaption class="mt-3 text-center font-body text-sm italic text-muted">{caption}</figcaption>}
+    </figure>
+    <div>
+      <h2 class="heading-2">{title}</h2>
+      <div class="copy mt-6 max-w-[42rem] space-y-5 font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+        {paragraphs.map((p) => <p set:html={p} />)}
+      </div>
+      {
+        link?.label && (
+          <p class="mt-6">
+            <a href={link.href} class="font-body text-[1.0625rem] font-semibold text-accent-ink hover:underline">
+              {link.label}
+            </a>
+          </p>
+        )
+      }
+    </div>
+  </div>
+</section>

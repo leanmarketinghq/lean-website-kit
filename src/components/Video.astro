@@ -1,0 +1,47 @@
+---
+/**
+ * A YouTube video that loads only when it is clicked. Until then the page
+ * shows the poster picture and a play button, and carries no third-party
+ * video code. `youtube` is the video's id: the part after "v=" in its address.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  youtube: string;
+  /** What the video is, for the play button's label and the player's title. */
+  title: string;
+  /** A still from the video, in src/assets/. */
+  poster: ImageMetadata;
+  alt: string;
+}
+const { youtube, title, poster, alt } = Astro.props;
+---
+
+<div class="video-card relative aspect-video overflow-hidden rounded-2xl bg-surface" data-youtube={youtube} data-title={title}>
+  <button type="button" class="group block h-full w-full cursor-pointer" aria-label={`Play ${title}`}>
+    <Image src={poster} alt={alt} widths={[640, 960, 1280]} sizes="(min-width: 768px) 60vw, 100vw" class="h-full w-full object-cover" />
+    <span class="absolute bottom-5 left-5 flex size-12 items-center justify-center rounded-full bg-paper/70 text-ink transition-transform group-hover:scale-105" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
+    </span>
+  </button>
+</div>
+
+<script is:inline>
+  // The player loads only after a click. One listener serves every video on the page.
+  if (!window.videoCardsReady) {
+    window.videoCardsReady = true;
+    document.addEventListener('click', function (event) {
+      const button = event.target.closest('.video-card[data-youtube] > button');
+      if (!button) return;
+      const box = button.parentElement;
+      const frame = document.createElement('iframe');
+      frame.src = 'https://www.youtube-nocookie.com/embed/' + box.dataset.youtube + '?autoplay=1&rel=0';
+      frame.title = box.dataset.title;
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+      frame.allowFullscreen = true;
+      frame.className = 'absolute inset-0 h-full w-full border-0';
+      box.replaceChildren(frame);
+    });
+  }
+</script>

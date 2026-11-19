@@ -1,0 +1,86 @@
+---
+import Button from './Button.astro';
+import Logo from './Logo.astro';
+import { NAV } from '../data/site';
+
+interface Props {
+  /** The nav href to mark as the current page. */
+  current?: string;
+}
+const { current } = Astro.props;
+const isCurrent = (href: string) => (current === href ? 'page' : undefined);
+/** No navigation (a one-page site): the logo on the left, the button on the right. */
+const hasNav = NAV.length > 0;
+---
+
+<!--
+  A slim sticky bar: the logo on the left, then the links and the button, so
+  the call to action is one tap away from every screen of the page. From 640px
+  up the links sit in the bar. Below that phones get a Menu button that opens
+  the same links (the browser's own disclosure element, so it works without
+  JavaScript; the small script at the end only closes the menu after a tap on
+  a link), and the button shows in the bar only on a site with no links.
+-->
+<header class="sticky top-0 z-30 border-b border-line/70 bg-paper/90 backdrop-blur-md">
+  <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-5 sm:h-16 sm:px-8">
+    <div class="mr-auto">
+      <Logo />
+    </div>
+    {hasNav && (
+    <nav aria-label="Main">
+      <ul class="hidden items-center gap-1 font-body text-[0.9375rem] sm:flex">
+        {
+          NAV.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isCurrent(item.href)}
+                class="rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-surface hover:text-ink aria-[current=page]:text-ink"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <details class="menu relative sm:hidden">
+        <summary
+          class="flex cursor-pointer list-none items-center gap-2 rounded-full border border-line px-3.5 py-1.5 font-body text-[0.9375rem] font-medium text-ink [&::-webkit-details-marker]:hidden"
+        >
+          Menu
+          <svg aria-hidden="true" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+            <path d="M2 3.5h10M2 7h10M2 10.5h10"></path>
+          </svg>
+        </summary>
+        <ul class="absolute right-0 z-40 mt-2 w-52 rounded-2xl border border-line bg-paper p-2 font-body text-[0.9375rem] shadow-lg">
+          {
+            NAV.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  aria-current={isCurrent(item.href)}
+                  class="block rounded-xl px-3 py-2 text-muted transition-colors hover:bg-surface hover:text-ink aria-[current=page]:text-ink"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+    </nav>
+    )}
+    <div class:list={[hasNav && 'hidden sm:block']}>
+      <Button size="sm" />
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  // Close the phone menu after a tap on one of its links.
+  for (const menu of document.querySelectorAll('details.menu')) {
+    for (const link of menu.querySelectorAll('a')) {
+      link.addEventListener('click', () => menu.removeAttribute('open'));
+    }
+  }
+</script>

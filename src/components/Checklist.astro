@@ -1,0 +1,29 @@
+---
+/** A heading, one lead line, then a tick list: the outcomes a customer wants, or what is included. */
+interface Props {
+  id: string;
+  title: string;
+  lead?: string;
+  items: readonly string[];
+}
+const { id, title, lead, items } = Astro.props;
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <div class="max-w-[42rem]">
+    <h2 class="heading-2">{title}</h2>
+    {lead && <p class="mt-6 font-body text-[1.25rem] leading-snug font-bold sm:text-[1.375rem]">{lead}</p>}
+    <ul class="mt-6 space-y-4">
+      {
+        items.map((item) => (
+          <li class="flex gap-3 font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
+            <svg aria-hidden="true" class="mt-1.5 size-5 shrink-0 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m5 12 5 5L20 7" />
+            </svg>
+            <span set:html={item} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

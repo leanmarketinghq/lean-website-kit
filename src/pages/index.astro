@@ -1,0 +1,62 @@
+---
+/**
+ * The home page: one section after another, each fed its words from
+ * src/data/home.ts. Reorder the sections, leave out the ones the copy has no
+ * words for, or use a kind twice with different words (each needs its own
+ * id). The header's links and the button point at these ids.
+ */
+import Base from '../layouts/Base.astro';
+import Cards from '../components/Cards.astro';
+import Checklist from '../components/Checklist.astro';
+import Cta from '../components/Cta.astro';
+import Faq from '../components/Faq.astro';
+import Hero from '../components/Hero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import MediaText from '../components/MediaText.astro';
+import Rows from '../components/Rows.astro';
+import Steps from '../components/Steps.astro';
+import Testimonials from '../components/Testimonials.astro';
+import TextBlock from '../components/TextBlock.astro';
+import { CONTACT, FORMS, SITE } from '../data/site';
+import { ABOUT, CONTACT_SECTION, FAQS, INTRO, OFFER, OUTCOMES, PROBLEMS, STEPS, STORIES } from '../data/home';
+
+const hasForm = Boolean(FORMS.contact);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.description,
+};
+---
+
+<Base title={SITE.name} description={SITE.description} path="/" jsonLd={jsonLd} hasForm={hasForm}>
+  <Hero />
+  <TextBlock id="what" title={INTRO.title} paragraphs={INTRO.paragraphs} />
+  <Cards id="problems" title={PROBLEMS.title} intro={PROBLEMS.intro} cards={PROBLEMS.cards} outro={PROBLEMS.outro} />
+  <Checklist id="outcomes" title={OUTCOMES.title} lead={OUTCOMES.lead} items={OUTCOMES.items} />
+  <Steps id="how" title={STEPS.title} subtitle={STEPS.subtitle} items={STEPS.items} image={STEPS.image} alt={STEPS.alt} />
+  <Testimonials id="stories" title={STORIES.title} items={STORIES.items} />
+  <Cta class="pb-8" />
+  <MediaText id="about" title={ABOUT.title} image={ABOUT.image} alt={ABOUT.alt} caption={ABOUT.caption} paragraphs={ABOUT.paragraphs} link={ABOUT.link} />
+  <Rows id="offer" title={OFFER.title} rows={OFFER.rows} />
+  <Faq id="faqs" title={FAQS.title} items={FAQS.items} />
+
+  <section id="contact" class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+    <h2 class="heading-2">{CONTACT_SECTION.title}</h2>
+    {
+      hasForm ? (
+        <LeadForm lead={CONTACT_SECTION.lead} suffix="home" split />
+      ) : (
+        <div class="mt-6 max-w-[42rem]">
+          <p class="font-body text-[1.1875rem] leading-relaxed">{CONTACT_SECTION.lead}</p>
+          <p class="mt-6">
+            <a href={`mailto:${CONTACT.email}`} class="btn btn-primary btn-lg">
+              {CONTACT.email}
+            </a>
+          </p>
+        </div>
+      )
+    }
+  </section>
+</Base>

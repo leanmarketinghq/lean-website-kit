@@ -1,0 +1,25 @@
+---
+/** Terms as rows: a short term in the accent, then its lines. Good for what is included, the price and the guarantee. */
+interface Props {
+  id: string;
+  title: string;
+  rows: readonly { term: string; lines: readonly string[] }[];
+}
+const { id, title, rows } = Astro.props;
+---
+
+<section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
+  <h2 class="heading-2">{title}</h2>
+  <dl class="mt-10 max-w-4xl divide-y divide-line border-y border-line">
+    {
+      rows.map((row) => (
+        <div class="grid gap-2 py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-8 sm:py-8">
+          <dt class="font-body text-[1.0625rem] font-bold text-accent-ink">{row.term}</dt>
+          <dd class="max-w-[42rem] font-body text-[1.0625rem] leading-relaxed sm:text-[1.125rem]">
+            {row.lines.map((line) => <p set:html={line} />)}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
