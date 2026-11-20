@@ -34,22 +34,34 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    /*
+     * Whatever the browser scrolls to lands below the sticky header, not
+     * under it: a section a link points at, and a link or question reached
+     * with the Tab key.
+     */
+    scroll-padding-top: 5.5rem;
   }
-  @media (prefers-reduced-motion: reduce) {
+  /* Links to a section glide there, unless the visitor has asked for less motion. */
+  @media (prefers-reduced-motion: no-preference) {
     html {
-      scroll-behavior: auto;
+      scroll-behavior: smooth;
     }
   }
   body {
     font-family: var(--body-font);
     font-optical-sizing: auto;
     text-rendering: optimizeLegibility;
+    /* A long word wraps instead of pushing the page sideways on a phone. */
+    overflow-wrap: break-word;
   }
-  /* Anchored sections land below the sticky header, not under it. */
-  [id] {
-    scroll-margin-top: 5.5rem;
+  /*
+   * An email address, a web address or a line of code has no spaces to wrap
+   * at, so in the page's own content it may break anywhere. Kept out of the
+   * header and footer: a menu label must never split mid-word.
+   */
+  main :where(a, code) {
+    overflow-wrap: anywhere;
   }
   ::selection {
     background: color-mix(in srgb, var(--accent) 30%, transparent);
@@ -58,6 +70,41 @@
     outline: 2px solid var(--accent);
     outline-offset: 3px;
     border-radius: 6px;
+  }
+  /*
+   * Touch screens: everything a finger has to hit is at least 44px tall (a
+   * mouse needs less, so this is for touch only). Buttons, the menu and the
+   * header's links grow to it. A small text link that stands on its own
+   * (.back-link, .tap-area) keeps its size and takes the room invisibly,
+   * above and below, so nothing on the page moves. Links inside a sentence
+   * are left alone.
+   */
+  @media (pointer: coarse) {
+    .btn,
+    summary,
+    header a {
+      min-block-size: 2.75rem;
+    }
+    header nav a {
+      display: inline-flex;
+      align-items: center;
+    }
+    .back-link,
+    .tap-area {
+      position: relative;
+    }
+    .back-link::after,
+    .tap-area::after {
+      content: "";
+      position: absolute;
+      inset: -0.875rem -0.25rem;
+    }
+  }
+  /* Windows High Contrast drops backgrounds, so a filled button would lose its shape: there it gets an edge. */
+  @media (forced-colors: active) {
+    .btn-primary {
+      border: 1px solid;
+    }
   }
 }
 
@@ -83,7 +130,7 @@
     font-size: 1.25rem;
     line-height: 1.3;
   }
-  @media (min-width: 640px) {
+  @media (min-width: 40rem) {
     .heading-1 {
       font-size: 3.75rem;
     }
@@ -111,6 +158,12 @@
   /* FAQ answers open below the question. */
   .faq summary::-webkit-details-marker {
     display: none;
+  }
+
+  /* The play button fills its card, and the card clips what sticks out: its focus ring is drawn inside the edge. */
+  .video-card > button:focus-visible {
+    outline-offset: -4px;
+    border-radius: 1rem;
   }
 
   .skip-link {
@@ -145,16 +198,26 @@
     color: var(--muted);
   }
 
-  .link {
+  /*
+   * Text links: the .link class, and any link written into the page's own
+   * words, which carries no class (a markdown page, or an <a> typed into a
+   * paragraph in src/data/home.ts). The words keep their colour and the
+   * underline says "link": it is the muted role, which the brand step holds
+   * to 4.5:1 on paper, so it shows on any brand. :where() keeps the second
+   * selector weak, so a part's own classes win.
+   */
+  .link,
+  :where(main a:not([class])) {
     text-decoration-line: underline;
-    text-decoration-thickness: 0.075em;
+    text-decoration-thickness: max(1px, 0.075em);
     text-underline-offset: 0.2em;
-    text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
+    text-decoration-color: var(--muted);
     transition:
       color 0.15s,
       text-decoration-color 0.15s;
   }
-  .link:hover {
+  .link:is(:hover, :focus-visible),
+  :where(main a:not([class])):is(:hover, :focus-visible) {
     color: var(--accent-ink);
     text-decoration-color: var(--accent);
   }
@@ -223,7 +286,7 @@
     background: var(--surface);
     padding: 1.5rem;
   }
-  @media (min-width: 640px) {
+  @media (min-width: 40rem) {
     .form-card {
       padding: 2.25rem;
     }
@@ -250,7 +313,7 @@
     color-scheme: light;
   }
   /* Wide screens: the words on the left, the form on the right. */
-  @media (min-width: 768px) {
+  @media (min-width: 48rem) {
     .form-split {
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
@@ -328,19 +391,7 @@
     line-height: 1.4;
     font-weight: 700;
   }
-  .prose :where(a) {
-    text-decoration-line: underline;
-    text-decoration-thickness: 0.075em;
-    text-underline-offset: 0.2em;
-    text-decoration-color: color-mix(in srgb, var(--ink) 28%, transparent);
-    transition:
-      color 0.15s,
-      text-decoration-color 0.15s;
-  }
-  .prose :where(a:hover) {
-    color: var(--accent-ink);
-    text-decoration-color: var(--accent);
-  }
+  /* Links in a markdown page take the text-link rule above (.link). */
   .prose :where(strong) {
     font-weight: 650;
   }

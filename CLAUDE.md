@@ -69,7 +69,7 @@ This is the step where an owner can lose their email, so go slowly.
 - Use the owner's words as they wrote them. Shorten or reorder only where a section needs it, and say what you changed.
 - Never make up facts, numbers, prices, awards, customer names or testimonials. If a section has no real words, take the section out or ask for them.
 - No placeholder may go live. Once the site has its own name, the build stops while any of the kit's placeholder words are on it (`scripts/ready.mjs` lists them). The one exception is the untouched starter, still named "Example Business", which is what the button first publishes.
-- The home page is a set of sections, each a part in `src/components/` fed from `src/data/home.ts`: Hero (with the Proof row), TextBlock, Cards, Checklist, Steps, Testimonials, MediaText, Rows, Faq, Cta, and the contact section. A kind can be used twice with different words; give each use its own `id`. Video is a click-to-play YouTube video for any section that needs one. If their copy needs a section the kit has no part for, write a new part in the same style as the others.
+- The home page is a set of sections, each a part in `src/components/` fed from `src/data/home.ts`: Hero (with the Proof row), TextBlock, Cards, Checklist, Steps, Testimonials, MediaText, Rows, Faq, Cta, and the contact section. A kind can be used twice with different words; give each use its own `id`. Video is a click-to-play YouTube video for any section that needs one. If their copy needs a section the kit has no part for, write a new part in the same style as the others. In a new part, a small link that stands on its own (not inside a sentence) takes the `tap-area` class, so a finger can hit it, and a list of cards or steps takes `role="list"`, as the other parts do.
 - Every page needs a `title` and a `description` of at least 20 characters. A page's address is its file name: `content/pages/Our Team.md` is `/our-team`. Renaming a page changes its address, so add the old address to `public/_redirects` in the same change.
 - The header's links (`NAV`) and the button (`CTA`) in `src/data/site.ts` point at section ids and pages. The tests fail if one points nowhere.
 
@@ -84,6 +84,7 @@ This is the step where an owner can lose their email, so go slowly.
 ## Pictures and forms
 
 - Photographs go in `src/assets/` and are imported in `src/data/home.ts`, so the build sizes them. Every picture needs alt text that says what it shows. Use the owner's own photographs; do not take pictures from the web.
+- Pictures load as a visitor scrolls to them, which is right for all but one. A picture or video in the first screen of a page (a photograph in the hero, a part moved to the top) has to load first: give its part `priority`, as in `<MediaText priority … />`. One a page at most.
 - The contact form is optional. It is a GoHighLevel form (Lean CRM is GoHighLevel): ask the owner for the form's embed code, and put its host and its form id in `FORMS` in `src/data/site.ts`. Never add `loading="lazy"` to it, and keep each iframe id unique on its page. Without a form, the site shows the email address.
 
 ## On the owner's computer

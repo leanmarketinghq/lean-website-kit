@@ -29,13 +29,13 @@ const term = 'font-bold text-accent-ink';
     <dl class="mt-10 divide-y divide-line border-y border-line font-body text-[1.0625rem] leading-relaxed">
       <div class={row}>
         <dt class={term}>Email</dt>
-        <dd><a href={`mailto:${CONTACT.email}`} class="link">{CONTACT.email}</a></dd>
+        <dd><a href={`mailto:${CONTACT.email}`} class="link tap-area">{CONTACT.email}</a></dd>
       </div>
       {
         CONTACT.phone && (
           <div class={row}>
             <dt class={term}>Phone</dt>
-            <dd><a href={CONTACT.phoneHref} class="link">{CONTACT.phone}</a></dd>
+            <dd><a href={CONTACT.phoneHref} class="link tap-area">{CONTACT.phone}</a></dd>
           </div>
         )
       }

@@ -11,16 +11,20 @@ interface Props {
   caption?: string;
   paragraphs: readonly string[];
   link?: { label: string; href: string };
+  /** True when this is the first thing on its page, so the photograph loads first. One picture a page at most. */
+  priority?: boolean;
 }
-const { id, title, image, alt, caption, paragraphs, link } = Astro.props;
+const { id, title, image, alt, caption, paragraphs, link, priority = false } = Astro.props;
+/** A figure only when there is a caption to tie to the photograph. */
+const Frame = caption ? 'figure' : Fragment;
 ---
 
 <section id={id} class="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-20">
   <div class="grid items-start gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-14">
-    <figure>
-      <Image src={image} alt={alt} widths={[480, 768, 1200]} sizes="(min-width: 768px) 40vw, 100vw" class="w-full rounded-xl" />
+    <Frame>
+      <Image src={image} alt={alt} priority={priority} widths={[480, 768, 1200]} sizes="(min-width: 768px) 40vw, 100vw" class="w-full rounded-xl" />
       {caption && <figcaption class="mt-3 text-center font-body text-sm italic text-muted">{caption}</figcaption>}
-    </figure>
+    </Frame>
     <div>
       <h2 class="heading-2">{title}</h2>
       <div class="copy mt-6 max-w-[42rem] space-y-5 font-body text-[1.0625rem] leading-relaxed sm:text-[1.1875rem]">
@@ -29,7 +33,7 @@ const { id, title, image, alt, caption, paragraphs, link } = Astro.props;
       {
         link?.label && (
           <p class="mt-6">
-            <a href={link.href} class="font-body text-[1.0625rem] font-semibold text-accent-ink hover:underline">
+            <a href={link.href} class="tap-area font-body text-[1.0625rem] font-semibold text-accent-ink hover:underline">
               {link.label}
             </a>
           </p>

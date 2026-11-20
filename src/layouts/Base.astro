@@ -23,6 +23,31 @@ interface Props {
 const { title, description, path, ogType = 'website', jsonLd, hasForm = false, current, preconnect = [] } = Astro.props;
 const canonical = new URL(path, SITE.url).href;
 const image = new URL(BRAND.share, SITE.url).href;
+
+/*
+ * The script in the head, explained here so the explanation is not sent to
+ * every visitor with it.
+ *
+ * Analytics run only with a GA4 id and only on the live hostname, so previews
+ * and workers.dev visits never reach the numbers.
+ *
+ * Form submissions are sent to GA as generate_lead. The GHL form lives in an
+ * iframe on another domain, so GA can't see it submit; after a successful
+ * submission GHL's form posts ['set-sticky-contacts',
+ * 'embedded_iframe_<frame id>', …] to this page (its submit handler, read in
+ * GHL's code on 2 Nov 2026). Only that message counts, and only the fact of
+ * it goes to GA: the same handler posts a second message (key '_ud') carrying
+ * the visitor's details, which must never be forwarded. If GHL changes the
+ * message, submissions quietly stop counting, so compare GA with GHL's
+ * submissions now and then.
+ *
+ * A message is trusted only when it comes from the form's own origin. The
+ * browser reports that origin in one exact spelling (lower case, no port when
+ * it is the usual one), so FORMS.host is put into the same spelling here: a
+ * host typed with a capital letter would otherwise never match, and no
+ * submission would be counted.
+ */
+const formOrigin = URL.canParse(FORMS.host) ? new URL(FORMS.host).origin : FORMS.host;
 ---
 
 <!doctype html>
@@ -52,9 +77,7 @@ const image = new URL(BRAND.share, SITE.url).href;
 
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
-    <script is:inline define:vars={{ gaId: SITE.gaId, liveHost: SITE.liveHost, ghlHost: FORMS.host }}>
-      // Analytics run only with a GA4 id and only on the live hostname, so
-      // previews and workers.dev visits never reach the numbers.
+    <script is:inline define:vars={{ gaId: SITE.gaId, liveHost: SITE.liveHost, ghlHost: formOrigin }}>
       if (gaId && location.hostname === liveHost) {
         const tag = document.createElement('script');
         tag.async = true;
@@ -67,15 +90,6 @@ const image = new URL(BRAND.share, SITE.url).href;
         window.gtag('js', new Date());
         window.gtag('config', gaId);
 
-        // Form submissions, sent to GA as generate_lead. The GHL form lives in
-        // an iframe on another domain, so GA can't see it submit; after a
-        // successful submission GHL's form posts ['set-sticky-contacts',
-        // 'embedded_iframe_<frame id>', …] to this page (its submit handler,
-        // read in GHL's code on 2 Nov 2026). Only that message counts, and
-        // only the fact of it goes to GA: the same handler posts a second
-        // message (key '_ud') carrying the visitor's details, which must never
-        // be forwarded. If GHL changes the message, submissions quietly stop
-        // counting, so compare GA with GHL's submissions now and then.
         window.addEventListener('message', function (event) {
           const data = event.data;
           if (event.origin !== ghlHost || !Array.isArray(data)) return;

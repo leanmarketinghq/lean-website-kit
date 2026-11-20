@@ -18,8 +18,8 @@ interface Props {
 const { lead, note, suffix, id, split = false } = Astro.props;
 ---
 
-<aside id={id} class:list={['form-card', split && 'form-split']} aria-label="Contact form">
+<div id={id} class:list={['form-card', split && 'form-split']}>
   <p class="form-lead">{lead}</p>
   <div class="form-frame" set:html={formIframe(FORMS.contact, FORMS.contactName, suffix, FORMS.contactHeight)} />
   {note && <p class="form-note">{note}</p>}
-</aside>
+</div>

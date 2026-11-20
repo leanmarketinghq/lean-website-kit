@@ -9,11 +9,11 @@ const year = new Date().getFullYear();
   >
     <p>© {year} {SITE.name}. All rights reserved</p>
     <nav aria-label="Footer">
-      <ul class="flex gap-5">
+      <ul class="flex flex-wrap gap-x-5 gap-y-3 pointer-coarse:gap-y-7">
         {
           FOOTER_LINKS.map((item) => (
             <li>
-              <a href={item.href} class="transition-colors hover:text-ink">
+              <a href={item.href} class="tap-area transition-colors hover:text-ink">
                 {item.label}
               </a>
             </li>

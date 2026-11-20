@@ -64,7 +64,7 @@ is a new set of values here and nothing else.
 | `paper` | the page ground | |
 | `surface` | cards, panels, alternate bands | a step away from paper, same family |
 | `ink` | headings and body text | 4.5:1 or better on paper |
-| `muted` | secondary text, captions | 4.5:1 or better on paper |
+| `muted` | secondary text, captions, the underline of text links | 4.5:1 or better on paper |
 | `line` | rules and borders | visible on paper and on surface |
 | `accent` | buttons, marks, underlines, focus rings | the brand's main colour |
 | `accent-ink` | the accent as text (links, labels) | 4.5:1 or better on paper; darken the accent until it passes |

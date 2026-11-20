@@ -9,7 +9,7 @@ const { class: className } = Astro.props;
 ---
 
 <aside class:list={['border-t border-line pt-8', className]} aria-label="Track record">
-  <ul class="grid max-w-4xl grid-cols-2 gap-x-6 gap-y-6 md:grid-cols-4">
+  <ul role="list" class="grid max-w-4xl grid-cols-2 gap-x-6 gap-y-6 md:grid-cols-4">
     {
       PROOF.map((fact) => (
         <li class="flex flex-col gap-1.5">

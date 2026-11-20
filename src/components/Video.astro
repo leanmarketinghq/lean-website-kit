@@ -14,14 +14,16 @@ interface Props {
   /** A still from the video, in src/assets/. */
   poster: ImageMetadata;
   alt: string;
+  /** True when the video is in the first screen of its page, so its poster loads first. One picture a page at most. */
+  priority?: boolean;
 }
-const { youtube, title, poster, alt } = Astro.props;
+const { youtube, title, poster, alt, priority = false } = Astro.props;
 ---
 
 <div class="video-card relative aspect-video overflow-hidden rounded-2xl bg-surface" data-youtube={youtube} data-title={title}>
   <button type="button" class="group block h-full w-full cursor-pointer" aria-label={`Play ${title}`}>
-    <Image src={poster} alt={alt} widths={[640, 960, 1280]} sizes="(min-width: 768px) 60vw, 100vw" class="h-full w-full object-cover" />
-    <span class="absolute bottom-5 left-5 flex size-12 items-center justify-center rounded-full bg-paper/70 text-ink transition-transform group-hover:scale-105" aria-hidden="true">
+    <Image src={poster} alt={alt} priority={priority} widths={[640, 960, 1280]} sizes="(min-width: 768px) 60vw, 100vw" class="h-full w-full object-cover" />
+    <span class="absolute bottom-5 left-5 flex size-12 items-center justify-center rounded-full bg-paper/70 text-ink motion-safe:transition-transform motion-safe:group-hover:scale-105" aria-hidden="true">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"></path></svg>
     </span>
   </button>
@@ -42,6 +44,8 @@ const { youtube, title, poster, alt } = Astro.props;
       frame.allowFullscreen = true;
       frame.className = 'absolute inset-0 h-full w-full border-0';
       box.replaceChildren(frame);
+      // The button that held the keyboard's place is gone: hand it to the player.
+      frame.focus();
     });
   }
 </script>

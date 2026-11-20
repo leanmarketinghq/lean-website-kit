@@ -1,4 +1,17 @@
 ---
+/**
+ * A slim sticky bar: the logo on the left, then the links and the button, so
+ * the call to action is one tap away from every screen of the page. From 640px
+ * up the links sit in the bar. Below that phones get a Menu button that opens
+ * the same links (the browser's own disclosure element, so it works without
+ * JavaScript; the small script at the end only closes the menu again), and the
+ * button shows in the bar only on a site with no links.
+ *
+ * The bar has a least height, not a fixed one, so a long name that wraps makes
+ * the bar taller instead of spilling out of it. The page a visitor is on is
+ * underlined in the links, not only darker, so it shows without relying on
+ * colour.
+ */
 import Button from './Button.astro';
 import Logo from './Logo.astro';
 import { NAV } from '../data/site';
@@ -11,18 +24,11 @@ const { current } = Astro.props;
 const isCurrent = (href: string) => (current === href ? 'page' : undefined);
 /** No navigation (a one-page site): the logo on the left, the button on the right. */
 const hasNav = NAV.length > 0;
+const currentMark = 'aria-[current=page]:text-ink aria-[current=page]:underline aria-[current=page]:decoration-2 aria-[current=page]:underline-offset-[0.4em]';
 ---
 
-<!--
-  A slim sticky bar: the logo on the left, then the links and the button, so
-  the call to action is one tap away from every screen of the page. From 640px
-  up the links sit in the bar. Below that phones get a Menu button that opens
-  the same links (the browser's own disclosure element, so it works without
-  JavaScript; the small script at the end only closes the menu after a tap on
-  a link), and the button shows in the bar only on a site with no links.
--->
 <header class="sticky top-0 z-30 border-b border-line/70 bg-paper/90 backdrop-blur-md">
-  <div class="mx-auto flex h-14 max-w-6xl items-center gap-4 px-5 sm:h-16 sm:px-8">
+  <div class="mx-auto flex min-h-14 max-w-6xl items-center gap-4 px-5 py-1.5 sm:min-h-16 sm:px-8">
     <div class="mr-auto">
       <Logo />
     </div>
@@ -35,7 +41,7 @@ const hasNav = NAV.length > 0;
               <a
                 href={item.href}
                 aria-current={isCurrent(item.href)}
-                class="rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-surface hover:text-ink aria-[current=page]:text-ink"
+                class:list={['rounded-full px-3 py-1.5 text-muted transition-colors hover:bg-surface hover:text-ink', currentMark]}
               >
                 {item.label}
               </a>
@@ -52,14 +58,14 @@ const hasNav = NAV.length > 0;
             <path d="M2 3.5h10M2 7h10M2 10.5h10"></path>
           </svg>
         </summary>
-        <ul class="absolute right-0 z-40 mt-2 w-52 rounded-2xl border border-line bg-paper p-2 font-body text-[0.9375rem] shadow-lg">
+        <ul class="absolute right-0 z-40 mt-2 max-h-[calc(100dvh-5rem)] w-52 overflow-y-auto rounded-2xl border border-line bg-paper p-2 font-body text-[0.9375rem] shadow-lg">
           {
             NAV.map((item) => (
               <li>
                 <a
                   href={item.href}
                   aria-current={isCurrent(item.href)}
-                  class="block rounded-xl px-3 py-2 text-muted transition-colors hover:bg-surface hover:text-ink aria-[current=page]:text-ink"
+                  class:list={['flex items-center rounded-xl px-3 py-2 text-muted transition-colors hover:bg-surface hover:text-ink', currentMark]}
                 >
                   {item.label}
                 </a>
@@ -77,10 +83,23 @@ const hasNav = NAV.length > 0;
 </header>
 
 <script is:inline>
-  // Close the phone menu after a tap on one of its links.
+  // The phone menu closes after a tap on one of its links, a tap anywhere
+  // else, the Escape key, or when the keyboard moves on past it.
   for (const menu of document.querySelectorAll('details.menu')) {
-    for (const link of menu.querySelectorAll('a')) {
-      link.addEventListener('click', () => menu.removeAttribute('open'));
-    }
+    const close = () => menu.removeAttribute('open');
+    menu.addEventListener('click', (event) => {
+      if (event.target.closest('a')) close();
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !menu.open) return;
+      close();
+      menu.querySelector('summary').focus();
+    });
+    menu.addEventListener('focusout', (event) => {
+      if (event.relatedTarget && !menu.contains(event.relatedTarget)) close();
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (menu.open && !menu.contains(event.target)) close();
+    });
   }
 </script>
